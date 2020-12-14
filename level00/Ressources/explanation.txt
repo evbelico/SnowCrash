@@ -1,0 +1,13 @@
+First of all, type `cat /etc/passwd`, it will reveal a line indicating the uid (user id) and gid (group id) of the flag00 account :
+
+flag00:x:3000:3000::/home/flag/flag00:/bin/bash
+
+Then search for the user using the find command : `find / -uid 3000 -gid 3000`.
+There these lines should appear :
+/usr/sbin/john
+/rofs/usr/sbin/john
+
+Read one of the two using cat, for example `cat /usr/sbin/john`. You should get `cdiiddwpgswtgt`.
+Go on dcode. Search for rot13 cipher and decode password. Result : `NOTTOOHARDHERE`
+
+Launch `su flag00` and enter `nottoohardhere` as password, then `getflag`.

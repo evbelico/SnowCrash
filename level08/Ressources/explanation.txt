@@ -1,0 +1,13 @@
+Upon arrival, we get a binary `level08` and a file "token".
+The binary needs a file in order to work. If we try `./level08 token`, it says we can't access the token file.
+A quick `ls -l` tells us we don't have rights on the token file.
+If we create a file on which we have rights, the binary will output the content of the file :
+`echo 'this is a test' > /tmp/hi && ./level08 /tmp/hi` => "this is a test"
+
+Rights are not the problem, the name of the file is. With a `strings level08` we can see that the binary uses the libc's `strstr()` function to compare the name of the file provided as arg, with an error function (so if we create a "/tmp/token" file for example, it won't work).
+
+We can bypass this checker function by creating a symbolic link (a shortcut to) from another file to the token file, then launching the binary on the other file like so :
+`ln -s /home/user/level08/token /tmp/link && ls -l /tmp/link && ./level08 /tmp/link`
+Retrieve the hash, log as flag08, and `getflag` :
+`su flag08` (use the hash)
+`getflag`

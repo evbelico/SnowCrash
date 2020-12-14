@@ -1,0 +1,25 @@
+Upon arrival, we can find the binary `level09` and the file `token`, which contains : f4kmm6p|=�p�n��DB�Du{��
+
+If we launch the binary on the token file (as is), we get : tpmhr
+It simply jumbles the arg ("token"), but does not actually read the file.
+`./level09 token' => tpmhr
+Let's fiddle with the binary :
+`./level09 abcdefg` => "acegikm"
+`./level09 1234` => 1357
+We can deduce that the binary changes the values according to an index (for ex "12" gives "13", which is str[0 + 0], str[1 + 1], str[2 + 2], so "1 (index = 0, so 1 + 0) 3 (index = 1, so 2 + 1), and so on).
+
+If we try to copy and paste the value inside the `token` file, it changes the content (the shell doesn't know how to compute the - hashed - characters) :
+`./level09 "f4kmm6p|pnDBDu"` [COPY PASTED] instead of `./level09 "f4kmm6p|=�p�n��DB�Du{��"`
+
+If we want to access the real content (but modified by the binary) of the file from the binary, we need to do so : `./level09 $(cat token)`
+Output : "f5mpq;v�E��{�{��TS�W�����"
+
+Let's try to copy the token file to our system : `scp -P4242 level09@[VM IP]:token 'token'`
+The content is the same : "f4kmm6p|=�p�n��DB�Du{��"
+
+Knowing the algorithm, we can revert it by substracting the value of each character by the index (`str[i] -= i`) :
+`gcc -Wall -Wextra -Werror main.c`
+`./a.out $(cat token)`
+
+Token file content reversed : "f3iji1ju5yuevaus41q1afiuq"
+Go retrieve the flag : `su flag09` (enter the reversed value), then `getflag` !

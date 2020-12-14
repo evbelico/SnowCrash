@@ -1,0 +1,8 @@
+There's a pcap file here. I tried to decrypt using the tcpdump command, to no avail.
+
+Let's download wireshark, then copy the pcap file to our own host (`scp -P4242 level02@[VM IP]:level02.pcap 'level02.pcap' (do not forget to use the level01's flag as password when asked) and import it into wireshark.
+
+Go to the `password:` section of the pcap file. From there, inside wireshark we can try to decipher the user's password by looking at the `data.data` bits (also in hexadecimal format. Sometimes parts are missing (corresponds to 7f hexa), but they're just key strokes on the `DEL` key. The real password is : ft_waNDReL0L
+`su flag02`, type the password, and `getflag` !
+
+"What is a PCAP file ?" : a file in which live network packet data has been saved. It is used to collect and record packet data from a network.

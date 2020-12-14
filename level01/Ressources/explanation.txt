@@ -1,0 +1,8 @@
+Go back to `cat /etc/passwd`. Find the hashed password of the flag01 account in the "encrypted" password section :
+flag01:42hDRfypTqqnw:3001:3001::/home/flag/flag01:/bin/bash
+
+Download John the Ripper on your own computer, then save the hash inside a txt file (using `echo`, copy-pasting, whatever you want).
+Crack the password using `/JohnTheRipper/run/john --show pwdfile.txt` (`show` option is used to directly show the result). You should get : abcdefg
+Ouput : ?:abcdefg
+
+Go back to the VM, launch `su flag01`, use the password (abcdefg) then `getflag`. You're done !

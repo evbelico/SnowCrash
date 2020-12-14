@@ -1,0 +1,12 @@
+The `level04.pl` perl program uses the CGI (Common Gateway Inteface) protocol, which is used to execute scripts via web requests. The script also uses the `qw()` function, which retrieves words out of a string (here it will be `param`);
+The hint "localhost:4747" means that the script is running on "http://localhost:4747" url.
+
+The function "x" (`sub x {}`) assigns the first input param to a variable called `$y`, then prints out the return of the system's `echo` command : "print `echo $y 2>&1`;".
+In perl, backticks (`) are used to execute commands, and its return value is STDOUT of the launched command (here it's `echo`).
+Finally, the "x" function is called, taking in the value from the "x" param in the query string, then outputs it like so :
+=> "http://localhost:4747?x=random"
+=> random
+
+So we just have to exploit the script so it actually prints the return value of the `getflag` command, using `echo` :
+=> curl 'http://localhost:4747?x=$(getflag)'
+=> Check flag.Here is your token : ne2searoevaevoem4ov4ar8ap

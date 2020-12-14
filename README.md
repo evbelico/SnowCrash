@@ -1,2 +1,11 @@
 # SnowCrash
-Small security project using a VM, offering a new flag on each level. No instructions, just investigate and get the flag !
+Small security project using a VM, offering CTF (*Capture The Flag*) challenges. Investigate and get all the flags !
+
+________
+
+**Notions** :
+
+* Binary exploitation
+* Bash/shell scripting
+* Reverse engineering
+* UNIX knowledge
